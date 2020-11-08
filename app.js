@@ -1,22 +1,22 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var createError = require("http-errors");
+var express = require("express");
+var path = require("path");
+var cookieParser = require("cookie-parser");
+var logger = require("morgan");
 var Promise = require("bluebird");
 
 // Define routers
-var indexRouter = require('./routes/index');
-var postsRouter = require('./routes/posts');
+var indexRouter = require("./routes/index");
+var postsRouter = require("./routes/posts");
 
 var app = express();
 
 // Set up mongoose connection
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 
 // Reading env variables (config example from https://github.com/sclorg/nodejs-ex/blob/master/server.js)
 var mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
-    mongoURLLabel = "";
+  mongoURLLabel = "";
 
 // For local dev
 // var mongoURL = 'mongodb://localhost:27017/demodb';
@@ -26,21 +26,21 @@ if (mongoURL == null) {
   // If using plane old env vars via service discovery
   if (process.env.DATABASE_SERVICE_NAME) {
     var mongoServiceName = process.env.DATABASE_SERVICE_NAME.toUpperCase();
-    mongoHost = process.env[mongoServiceName + '_SERVICE_HOST'];
-    mongoPort = process.env[mongoServiceName + '_SERVICE_PORT'];
-    mongoDatabase = process.env[mongoServiceName + '_DATABASE'];
-    mongoPassword = process.env[mongoServiceName + '_PASSWORD'];
-    mongoUser = process.env[mongoServiceName + '_USER'];
+    mongoHost = process.env[mongoServiceName + "_SERVICE_HOST"];
+    mongoPort = process.env[mongoServiceName + "_SERVICE_PORT"];
+    mongoDatabase = process.env[mongoServiceName + "_DATABASE"];
+    mongoPassword = process.env[mongoServiceName + "_PASSWORD"];
+    mongoUser = process.env[mongoServiceName + "_USER"];
 
-  // If using env vars from secret from service binding
+    // If using env vars from secret from service binding
   } else if (process.env.database_name) {
     mongoDatabase = process.env.database_name;
     mongoPassword = process.env.password;
     mongoUser = process.env.username;
     var mongoUriParts = process.env.uri && process.env.uri.split("//");
-    if (mongoUriParts.length == 2) {
+    if (mongoUriParts.length === 2) {
       mongoUriParts = mongoUriParts[1].split(":");
-      if (mongoUriParts && mongoUriParts.length == 2) {
+      if (mongoUriParts && mongoUriParts.length === 2) {
         mongoHost = mongoUriParts[0];
         mongoPort = mongoUriParts[1];
       }
@@ -48,13 +48,13 @@ if (mongoURL == null) {
   }
 
   if (mongoHost && mongoPort && mongoDatabase) {
-    mongoURLLabel = mongoURL = 'mongodb://';
+    mongoURLLabel = mongoURL = "mongodb://";
     if (mongoUser && mongoPassword) {
-      mongoURL += mongoUser + ':' + mongoPassword + '@';
+      mongoURL += mongoUser + ":" + mongoPassword + "@";
     }
     // Provide UI label that excludes user id and pw
-    mongoURLLabel += mongoHost + ':' + mongoPort + '/' + mongoDatabase;
-    mongoURL += mongoHost + ':' +  mongoPort + '/' + mongoDatabase;
+    mongoURLLabel += mongoHost + ":" + mongoPort + "/" + mongoDatabase;
+    mongoURL += mongoHost + ":" + mongoPort + "/" + mongoDatabase;
   }
 }
 
@@ -62,36 +62,36 @@ if (mongoURL == null) {
 mongoose.connect(mongoURL);
 mongoose.Promise = Promise;
 var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "pug");
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
 // Use the routes
-app.use('/', indexRouter);
-app.use('/posts', postsRouter);
+app.use("/", indexRouter);
+app.use("/posts", postsRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get("env") === "development" ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render("error");
 });
 
 module.exports = app;

@@ -10,14 +10,14 @@
     "npm": "*"
   },
   "dependencies": {
-    "bluebird": "^3.5.3",
-    "cookie-parser": "~1.4.3",
-    "debug": "~2.6.9",
-    "express": "~4.16.0",
-    "express-validator": "^5.3.0",
-    "http-errors": "~1.6.2",
-    "mongoose": "^5.3.14",
-    "morgan": "~1.9.0",
-    "pug": "^2.0.0-beta11"
+    "bluebird": "3.7.2",
+    "cookie-parser": "1.4.5",
+    "debug": "4.2.0",
+    "express": "4.17.1",
+    "express-validator": "6.6.1",
+    "http-errors": "1.8.0",
+    "mongoose": "5.10.13",
+    "morgan": "1.10.0",
+    "pug": "3.0.0"
   }
 }
