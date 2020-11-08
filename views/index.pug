@@ -1,7 +1,9 @@
 extends layout
 
 block content
- #board.container
+ div#board
+  append scripts
+    script(src='/javascripts/index.js')
   br
   form
     button(type='reset' value='Reset') Restart

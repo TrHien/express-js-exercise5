@@ -4,27 +4,72 @@ var TicTacToe = require("../models/tictactoe");
 const { body, validationResult } = require("express-validator/check");
 const { sanitizeBody } = require("express-validator/filter");
 
-// Display list of all posts.
+/ Display list of all posts.
 exports.index = function (req, res, next) {
-  TicTacToe.findOne({}).exec((err, game) => {});
+    TicTacToe.findOne({}).exec((err, game) => {
+        let responseData = {
+            success: false,
+            data: null,
+            error: null,
+        };
+        if (err) {
+            responseData.error = err;
+        } else {
+            responseData.success = true;
+            if (game && !game.is_game_finished) {
+                responseData.data = game;
+            }
+        }
+        res.json(responseData);
+    });
 };
 
 // Handle book create on POST.
 exports.create = function (req, res, next) {
-  sanitizeBody("*").trim().escape();
+    sanitizeBody('*').trim().escape();
 
-  // Create a post object
-  // Improve: Use promises with .then()
-  var post = new TicTacToe({
-    content: req.body.content,
-    author: req.body.author
-  });
+    // Create a post object
+    // Improve: Use promises with .then()
+    let jsonReq = req.body;
 
-  post.save(function (err) {
-    if (err) {
-      return next(err);
-    }
-    // Successful - redirect to new book record.
-    res.redirect("/posts");
-  });
+    let boardGame = new TicTacToe({
+        is_game_finished: false,
+        winner: null,
+        game_size: jsonReq.gameSize,
+        players: {
+            tic: [],
+            toc: [],
+        },
+    });
+
+    boardGame.save((err) => {
+        let responseData = {
+            success: true,
+            data: boardGame,
+            error: null,
+        };
+
+        if (err) {
+            responseData.success = false;
+            responseData.error = err;
+        }
+        res.json(responseData);
+    });
 };
+
+exports.delete = function (req, res, next) {
+    TicTacToe.deleteOne({}, (err) => {
+        let responseData = {
+            success: true,
+            data: true,
+            error: null,
+        };
+
+        if (err) {
+            responseData.success = false;
+            responseData.error = err;
+        }
+        res.json(responseData);
+    });
+};
+

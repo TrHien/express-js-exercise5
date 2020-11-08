@@ -1,9 +1,11 @@
 var express = require("express");
 var router = express.Router();
 
+let gameController = require("../controllers/gameController");
+
 /* GET home page. */
 router.get("/", function (req, res, next) {
-  res.render("index");
+  res.render("index", { title: "Tic tac toe" });
 });
 
 module.exports = router;
