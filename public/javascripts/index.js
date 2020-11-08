@@ -5,88 +5,93 @@ var N_SIZE = 5,
   score,
   moves;
 
-async function getBoardGame() {
-  try {
-    let resp = await fetch("/game");
-    let jsonResp = await resp.json();
-    if (jsonResp.success) {
-      return jsonResp.data;
-    } else {
-      return null;
-    }
-  } catch (e) {
-    return e;
-  }
+function getBoardGame() {
+  return new fetch("/game")
+    .then((res) => res.json())
+    .then((out) => {
+      console.log("Output: ", out);
+    })
+    .catch((err) => console.error(err));
 }
 
-function createBoardGame(gameSize) {
-  return new Promise((resolve, reject) => {
-    fetch("/game", {
+async function createBoardGame() {
+  let gameSize = prompt("Please enter board size:", "3");
+  if (gameSize != null && gameSize !== "") {
+    gameSize = parseInt(gameSize);
+  } else {
+    gameSize = 5;
+  }
+
+  try {
+    let resp = await fetch("/game", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ gameSize: parseInt(gameSize) })
-    })
-      .then((res) => res.json())
-      .then((jsonResp) => {
-        if (jsonResp.success) {
-          resolve(true);
-        } else {
-          reject(jsonResp.error);
-        }
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+      body: JSON.stringify({ gameSize: gameSize })
+    });
+    let jsonResp = await resp.json();
+    if (jsonResp.success) {
+      return jsonResp.data;
+    } else {
+      console.error(jsonResp.error);
+      return null;
+    }
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
 }
 
 function init() {
-  getBoardGame()
-    .then((gameData) => {
-      if (!gameData) {
-        let boardSize = prompt("Please enter board size:", "3");
-        if (boardSize != null && boardSize !== "") {
-          N_SIZE = parseInt(boardSize);
-        }
-        createBoardGame(N_SIZE);
+  getBoardGame();
+  fetch("/game")
+    .then((res) => res.json())
+    .then((respData) => {
+      if (!respData.success) {
+        console.error(respData.error);
       } else {
-        N_SIZE = gameData.game_size;
-      }
-
-      var board = document.createElement("table");
-      board.setAttribute("border", 1);
-      board.setAttribute("border-spacing", 0);
-
-      var identifier = 1;
-      for (var i = 0; i < N_SIZE; i++) {
-        var row = document.createElement("tr");
-        board.appendChild(row);
-        for (var j = 0; j < N_SIZE; j++) {
-          var cell = document.createElement("td");
-          cell.setAttribute("height", 60);
-          cell.setAttribute("width", 60);
-          cell.setAttribute("align", "center");
-          cell.classList.add("col" + j, "row" + i);
-          if (i === j) {
-            cell.classList.add("diagonal0");
+        if (!respData.data) {
+          let boardSize = prompt("Please enter board size:", "3");
+          if (boardSize != null) {
+            N_SIZE = boardSize;
           }
-          if (j === N_SIZE - i - 1) {
-            cell.classList.add("diagonal1");
-          }
-          cell.identifier = identifier;
-          cell.addEventListener("click", set);
-          row.appendChild(cell);
-          boxes.push(cell);
-          identifier += identifier;
+        } else {
         }
       }
-
-      document.getElementById("board").appendChild(board);
-      startNewGame();
     })
     .catch((err) => console.error(err));
+
+  var board = document.createElement("table");
+  board.setAttribute("border", 1);
+  board.setAttribute("border-spacing", 0);
+
+  var identifier = 1;
+  for (var i = 0; i < N_SIZE; i++) {
+    var row = document.createElement("tr");
+    board.appendChild(row);
+    for (var j = 0; j < N_SIZE; j++) {
+      var cell = document.createElement("td");
+      cell.setAttribute("height", 60);
+      cell.setAttribute("width", 60);
+      cell.setAttribute("align", "center");
+      cell.classList.add("col" + j, "row" + i);
+      if (i === j) {
+        cell.classList.add("diagonal0");
+      }
+      if (j === N_SIZE - i - 1) {
+        cell.classList.add("diagonal1");
+      }
+      cell.identifier = identifier;
+      cell.addEventListener("click", set);
+      row.appendChild(cell);
+      boxes.push(cell);
+      identifier += identifier;
+    }
+  }
+
+  document.getElementById("board").appendChild(board);
+  startNewGame();
 }
 
 function startNewGame() {

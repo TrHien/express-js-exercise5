@@ -16,7 +16,8 @@ var mongoose = require("mongoose");
 
 // Reading env variables (config example from https://github.com/sclorg/nodejs-ex/blob/master/server.js)
 var mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
-  mongoURLLabel = "";
+  mongoURLLabel =
+    "mongodb+srv://hien123:hien123@cluster0.kyc4z.mongodb.net/TicTacToe?retryWrites=true&w=majority";
 
 // For local dev
 // var mongoURL = 'mongodb://localhost:27017/demodb';
