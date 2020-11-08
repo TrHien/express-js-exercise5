@@ -15,7 +15,10 @@ exports.create = function (req, res, next) {
 
   // Create a post object
   // Improve: Use promises with .then()
-  var post = new Post({ content: req.body.content, author: req.body.author });
+  var post = new TicTacToe({
+    content: req.body.content,
+    author: req.body.author
+  });
 
   post.save(function (err) {
     if (err) {
